@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1">
+    <title>Document</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-header {
+            font-weight: bold;
+        }
+        .card-subject {
+            background-color: #f8f9fa;
+        }
+        .card-sender {
+            background-color: #e9ecef;
+        }
+        .card-receiver {
+            background-color: #dee2e6;
+        }
+        .card-next-receiver {
+            background-color: #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">文件資訊</h1>
+        <form id="editForm" action="/save/<%= id %>" method="post" class="mt-4">
+            <div class="row">
+                <div class="col-lg-6 mb-3">
+                    <div class="card card-subject h-100">
+                        <div class="card-header text-white bg-info">主旨與備註</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="subject">主旨：</label>
+                                <input type="text" class="form-control" id="subject" name="subject" value="<%= document.subject %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="remark">備註：</label>
+                                <textarea class="form-control" id="remark" name="remark" <%= editable ? '' : 'readonly' %>><%= document.remark %></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-3">
+                    <div class="card card-sender h-100">
+                        <div class="card-header text-white bg-primary">寄件人</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="sender">寄件人：</label>
+                                <input type="text" class="form-control" id="sender" name="sender" value="<%= document.sender %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderDept">部門：</label>
+                                <select class="form-control" id="senderDept" name="senderDept" <%= editable ? '' : 'disabled' %>>
+                                    <% departments.forEach(function(dept) { %>
+                                        <option value="<%= dept %>" <%= document.senderDept === dept ? 'selected' : '' %>><%= dept %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderFloor">樓層：</label>
+                                <input type="text" class="form-control" id="senderFloor" name="senderFloor" value="<%= document.senderFloor %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="senderExt">分機：</label>
+                                <input type="text" class="form-control" id="senderExt" name="senderExt" value="<%= document.senderExt %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <% if (editable) { %>
+                                <button type="button" class="btn btn-secondary" onclick="clearCard('sender')">清除</button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-3">
+                    <div class="card card-receiver h-100">
+                        <div class="card-header text-white bg-warning">收件人</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="receiver">收件人：</label>
+                                <input type="text" class="form-control" id="receiver" name="receiver" value="<%= document.receiver %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverDept">部門：</label>
+                                <select class="form-control" id="receiverDept" name="receiverDept" <%= editable ? '' : 'disabled' %>>
+                                    <% departments.forEach(function(dept) { %>
+                                        <option value="<%= dept %>" <%= document.receiverDept === dept ? 'selected' : '' %>><%= dept %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverFloor">樓層：</label>
+                                <input type="text" class="form-control" id="receiverFloor" name="receiverFloor" value="<%= document.receiverFloor %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="receiverExt">分機：</label>
+                                <input type="text" class="form-control" id="receiverExt" name="receiverExt" value="<%= document.receiverExt %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <% if (editable) { %>
+                                <button type="button" class="btn btn-secondary" onclick="clearCard('receiver')">清除</button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-3">
+                    <div class="card card-next-receiver h-100">
+                        <div class="card-header text-white bg-secondary">下一位收件人</div>
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="nextReceiver">下一位收件人：</label>
+                                <input type="text" class="form-control" id="nextReceiver" name="nextReceiver" value="<%= document.nextReceiver %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="nextReceiverDept">部門：</label>
+                                <select class="form-control" id="nextReceiverDept" name="nextReceiverDept" <%= editable ? '' : 'disabled' %>>
+                                    <% departments.forEach(function(dept) { %>
+                                        <option value="<%= dept %>" <%= document.nextReceiverDept === dept ? 'selected' : '' %>><%= dept %></option>
+                                    <% }); %>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="nextReceiverFloor">樓層：</label>
+                                <input type="text" class="form-control" id="nextReceiverFloor" name="nextReceiverFloor" value="<%= document.nextReceiverFloor %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <div class="form-group">
+                                <label for="nextReceiverExt">分機：</label>
+                                <input type="text" class="form-control" id="nextReceiverExt" name="nextReceiverExt" value="<%= document.nextReceiverExt %>" <%= editable ? '' : 'readonly' %>>
+                            </div>
+                            <% if (editable) { %>
+                                <button type="button" class="btn btn-secondary" onclick="clearCard('nextReceiver')">清除</button>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mb-3">
+                <% if (editable) { %>
+                    <div class="form-group">
+                        <select class="form-control d-inline w-auto" id="swapFrom">
+                            <option value="sender">寄件人</option>
+                            <option value="receiver">收件人</option>
+                            <option value="nextReceiver">下一位收件人</option>
+                        </select>
+                        <span> <-> </span>
+                        <select class="form-control d-inline w-auto" id="swapTo">
+                            <option value="sender">寄件人</option>
+                            <option value="receiver">收件人</option>
+                            <option value="nextReceiver">下一位收件人</option>
+                        </select>
+                        <button type="button" class="btn btn-info" onclick="swapSelectedInfo()">對調</button>
+                    </div>
+                <% } %>
+            </div>
+
+            <div class="text-center mb-3">
+                <% if (editable) { %>
+                    <button type="submit" class="btn btn-success">儲存</button>
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">還原</button>
+                    <button type="button" class="btn btn-danger" onclick="clearAll()">全部清除</button>
+                <% } else { %>
+                    <button formaction="/edit/<%= id %>" formmethod="post" class="btn btn-warning">編輯</button>
+                <% } %>
+            </div>
+        </form>
+    </div>
+    <script>
+        const originalData = <%- JSON.stringify(document) %>;
+
+        function swapInfo(a, b) {
+            const fields = ['', 'Dept', 'Floor', 'Ext'];
+            fields.forEach(field => {
+                const fromElement = document.getElementById(a + field);
+                const toElement = document.getElementById(b + field);
+                if (fromElement && toElement) {
+                    const temp = fromElement.value;
+                    fromElement.value = toElement.value;
+                    toElement.value = temp;
+                }
+            });
+        }
+
+        function swapSelectedInfo() {
+            const from = document.getElementById('swapFrom').value;
+            const to = document.getElementById('swapTo').value;
+            if (from !== to) {
+                swapInfo(from, to);
+            } else {
+                alert('請選擇不同的對象進行對調。');
+            }
+        }
+
+        function resetForm() {
+            for (let key in originalData) {
+                if (document.getElementById(key)) {
+                    document.getElementById(key).value = originalData[key];
+                }
+            }
+        }
+
+        function clearCard(card) {
+            const fields = ['', 'Dept', 'Floor', 'Ext'];
+            fields.forEach(field => {
+                const element = document.getElementById(card + field);
+                if (element) {
+                    element.value = '';
+                }
+            });
+        }
+
+        function clearAll() {
+            clearCard('sender');
+            clearCard('receiver');
+            clearCard('nextReceiver');
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>

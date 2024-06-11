@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=1">
+    <title>Generate QR Code</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .card-header {
+            font-weight: bold;
+        }
+        .card-subject {
+            background-color: #f8f9fa;
+        }
+        .card-sender {
+            background-color: #e9ecef;
+        }
+        .card-receiver {
+            background-color: #dee2e6;
+        }
+        .card-next-receiver {
+            background-color: #ced4da;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">生成 QR Code</h1>
+        <form id="form" action="/generate" method="post" class="mt-4">
+            <div class="card card-subject mb-3">
+                <div class="card-header text-white bg-info">主旨與備註</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="subject">主旨：</label>
+                        <input type="text" class="form-control" id="subject" name="subject" >
+                    </div>
+                    <div class="form-group">
+                        <label for="remark">備註：</label>
+                        <textarea class="form-control" id="remark" name="remark"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-sender mb-3">
+                <div class="card-header text-white bg-primary">寄件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="sender">寄件人：</label>
+                        <input type="text" class="form-control" id="sender" name="sender" >
+                    </div>
+                    <div class="form-group">
+                        <label for="senderDept">部門：</label>
+                        <select class="form-control" id="senderDept" name="senderDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="senderFloor">樓層：</label>
+                        <input type="text" class="form-control" id="senderFloor" name="senderFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="senderExt">分機：</label>
+                        <input type="text" class="form-control" id="senderExt" name="senderExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-receiver mb-3">
+                <div class="card-header text-white bg-warning">收件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="receiver">收件人：</label>
+                        <input type="text" class="form-control" id="receiver" name="receiver" >
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverDept">部門：</label>
+                        <select class="form-control" id="receiverDept" name="receiverDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverFloor">樓層：</label>
+                        <input type="text" class="form-control" id="receiverFloor" name="receiverFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="receiverExt">分機：</label>
+                        <input type="text" class="form-control" id="receiverExt" name="receiverExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-next-receiver mb-3">
+                <div class="card-header text-white bg-secondary">下一位收件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="nextReceiver">下一位收件人：</label>
+                        <input type="text" class="form-control" id="nextReceiver" name="nextReceiver">
+                    </div>
+                    <div class="form-group">
+                        <label for="nextReceiverDept">部門：</label>
+                        <select class="form-control" id="nextReceiverDept" name="nextReceiverDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="nextReceiverFloor">樓層：</label>
+                        <input type="text" class="form-control" id="nextReceiverFloor" name="nextReceiverFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="nextReceiverExt">分機：</label>
+                        <input type="text" class="form-control" id="nextReceiverExt" name="nextReceiverExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">生成 QR Code</button>
+                <button type="reset" class="btn btn-secondary">清除</button>
+            </div>
+        </form>
+
+        <hr class="my-5">
+
+        <h2 class="text-center">快速生成多個 QR Code</h2>
+        <form id="bulkForm" action="/generate-multiple" method="post" class="mt-4">
+            <div class="card card-subject mb-3">
+                <div class="card-header text-white bg-info">主旨與備註</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="bulkSubject">主旨：</label>
+                        <input type="text" class="form-control" id="bulkSubject" name="subject" >
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkRemark">備註：</label>
+                        <textarea class="form-control" id="bulkRemark" name="remark"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-sender mb-3">
+                <div class="card-header text-white bg-primary">寄件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="bulkSender">寄件人：</label>
+                        <input type="text" class="form-control" id="bulkSender" name="sender" >
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkSenderDept">部門：</label>
+                        <select class="form-control" id="bulkSenderDept" name="senderDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkSenderFloor">樓層：</label>
+                        <input type="text" class="form-control" id="bulkSenderFloor" name="senderFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkSenderExt">分機：</label>
+                        <input type="text" class="form-control" id="bulkSenderExt" name="senderExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-receiver mb-3">
+                <div class="card-header text-white bg-warning">收件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="bulkReceiver">收件人：</label>
+                        <input type="text" class="form-control" id="bulkReceiver" name="receiver" >
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkReceiverDept">部門：</label>
+                        <select class="form-control" id="bulkReceiverDept" name="receiverDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkReceiverFloor">樓層：</label>
+                        <input type="text" class="form-control" id="bulkReceiverFloor" name="receiverFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkReceiverExt">分機：</label>
+                        <input type="text" class="form-control" id="bulkReceiverExt" name="receiverExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-next-receiver mb-3">
+                <div class="card-header text-white bg-secondary">下一位收件人</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="bulkNextReceiver">下一位收件人：</label>
+                        <input type="text" class="form-control" id="bulkNextReceiver" name="nextReceiver">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkNextReceiverDept">部門：</label>
+                        <select class="form-control" id="bulkNextReceiverDept" name="nextReceiverDept">
+                            <% departments.forEach(function(dept) { %>
+                                <option value="<%= dept %>"><%= dept %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkNextReceiverFloor">樓層：</label>
+                        <input type="text" class="form-control" id="bulkNextReceiverFloor" name="nextReceiverFloor">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkNextReceiverExt">分機：</label>
+                        <input type="text" class="form-control" id="bulkNextReceiverExt" name="nextReceiverExt">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group text-center">
+                <label for="quantity">生成數量：</label>
+                <input type="number" class="form-control d-inline w-auto" id="quantity" name="quantity" required>
+            </div>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary">生成多個 QR Code</button>
+                <button type="reset" class="btn btn-secondary">清除</button>
+            </div>
+        </form>
+    </div>
+    <script>
+        function copyInfo(from, to) {
+            document.getElementById(to).value = document.getElementById(from).value;
+            document.getElementById(to + 'Dept').value = document.getElementById(from + 'Dept').value;
+            document.getElementById(to + 'Floor').value = document.getElementById(from + 'Floor').value;
+            document.getElementById(to + 'Ext').value = document.getElementById(from + 'Ext').value;
+        }
+
+        document.getElementById('form').addEventListener('reset', function(event) {
+            if (confirm('確定要清除所有欄位嗎？')) {
+                return true;
+            }
+            event.preventDefault();
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</body>
+</html>
